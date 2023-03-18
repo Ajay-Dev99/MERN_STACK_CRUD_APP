@@ -2,7 +2,6 @@ import './EditUser.css'
 import {useSelector} from 'react-redux'
 function EditUser() {
     const user = useSelector((state) => state.user);
-console.log(user,"jdhhd")
     return (
         <div>
             <div className="conatiner userbody">

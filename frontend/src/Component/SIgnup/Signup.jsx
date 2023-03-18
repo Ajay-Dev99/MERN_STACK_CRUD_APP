@@ -16,27 +16,6 @@ function Signup() {
             position:"top-center"
         })
     }
-// async function handleSubmission(e){
-//     e.preventDefault();
-//     try {
-//         const {data}=await axios.post("http://localhost:5000/signup",{
-//             ...values
-//         });
-//         console.log(data);
-//         if(data){
-//             if(data.errors){
-//                 const {name,email,password} = data.errors;
-//                 if(name) generateError(name);
-//                 else if(email) generateError(email);
-//                 else if(password) generateError(password);
-//             }else{
-//                 navigate("/")
-//             }
-//         }
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// }
 
 async function handleSubmission(e) {
     e.preventDefault();
@@ -74,15 +53,12 @@ async function handleSubmission(e) {
     }
   
     if (Object.keys(errors).length > 0) {
-      // Display error messages for invalid inputs
-    //   generateError(errors);
+      generateError(errors);
     } else {
-      // Make API call to submit the form
       try {
         const {data}=await axios.post("http://localhost:5000/signup",{
             ...values
         });
-        console.log(data);
         if(data){
             if(data.errors){
                 const {name,email,password} = data.errors;
@@ -94,7 +70,7 @@ async function handleSubmission(e) {
             }
         }
     } catch (error) {
-        console.log(error.message);
+        generateError(error)
     }
     }
   }

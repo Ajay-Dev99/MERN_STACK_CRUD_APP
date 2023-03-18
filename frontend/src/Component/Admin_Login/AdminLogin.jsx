@@ -7,6 +7,7 @@ import {useCookies} from 'react-cookie'
 
 function AdminLogin() {
     const [cookies,setCookie,removeCookie] = useCookies([]);
+
     const navigate=useNavigate()
     const [values,setValues]=useState({
         email:"",
@@ -20,7 +21,6 @@ function AdminLogin() {
     }
 async function handleSubmission(e){
     e.preventDefault();
-    console.log(values);
     try {
         const {data}=await axios.post("http://localhost:5000/admin/adminlogin",{
             ...values
@@ -31,7 +31,7 @@ async function handleSubmission(e){
                  if(email) generateError(email);
                 else if(password) generateError(password);
             }else{
-                setCookie('jwt', `${data.jwt}`);
+                setCookie('admin_jwt', `${data.jwt}`);
                 navigate("/admin")
             }
         }

@@ -63,7 +63,6 @@ function handleSubmission(e) {
       // Make API call to submit the form
       axios.post('http://localhost:5000/admin/adduser', values)
         .then((response) => {
-          console.log(response.data);
           const data = response.data;
           if (!data.status) {
             generateError(data.error);
@@ -81,7 +80,6 @@ function handleSubmission(e) {
           }
         })
         .catch((error) => {
-          console.log(error);
           generateError('An error occurred while submitting the form. Please try again later.');
         });
     }

@@ -5,32 +5,47 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUserDetails } from '../../Features/UserSlice';
+import {useCookies} from 'react-cookie'
+
 
 function AdminHome() {
     const navigate = useNavigate()
     const [usersData, setUsersData] = useState()
+
+    const [cookies,setCookie,removeCookie] = useCookies([]);
     const dispatch = useDispatch();
 
     async function getUsersData() {
-        const res = await axios.get("http://localhost:5000/admin")
+        const res = await axios.get("http://localhost:5000/admin",{ withCredentials:true });
         const data = await res.data
-        if (res.status === '201' || data) {
-            setUsersData(data)
+
+
+        if(!data.status){
+            removeCookie("admin_jwt")
+            navigate("/adminlogin")
+        }
+
+        if (res.status === '201' || data.status) {
+            let users = data.usersData
+            setUsersData(users)
         }
         if (!data || res.status === '422')
             toast("Something went wrong")
     }
 
     useEffect(() => {
+        
+        if(!cookies.admin_jwt){
+            navigate("/adminlogin");
+        }
         getUsersData()
-    }, [])
+
+    },[cookies,navigate,removeCookie])
 
 
     async function deleteUser(id) {
-        console.log(id, "idd");
         const res2 = await axios.post(`http://localhost:5000/admin/deleteuser/${id}`)
         const data = res2.data
-        console.log(data);
         if (res2.status === 201 || data) {
             toast("User deleted", {
                 style: {
@@ -43,17 +58,22 @@ function AdminHome() {
 
     }
 
+    function adminLogOut(){
+            removeCookie("admin_jwt")
+            navigate("/adminlogin")
+        
+    }
+
 
 
     return (
         <div>
             <header >
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                    <div className="container-fluid">
+                    <div className="container-fluid d-flex justify-content-between">
                         <a className="navbar-brand" href='/#'>Admin Panel</a>
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
+                        <button onClick={adminLogOut}>log out</button>
+
                     </div>
                 </nav>
             </header>
@@ -72,7 +92,8 @@ function AdminHome() {
                     </thead>
                     <tbody>
                         {
-                            usersData && usersData.map((user, id) => {
+                           
+                            usersData ? usersData.map((user, id) => {
                                 return (
                                     <tr key={id}>
                                         <th scope="row">{id + 1}</th>
@@ -95,7 +116,7 @@ function AdminHome() {
                                         </td>
                                     </tr>
                                 )
-                            })
+                            }) : <h1>No users Found</h1>
                         }
 
 

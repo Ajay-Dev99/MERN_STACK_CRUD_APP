@@ -7,11 +7,6 @@ const bcrypt = require("bcrypt")
 
 
 const createToken = (id) => {
-    console.log(id,"pppppp");
-    const da = jwt.sign({ id }, "secret-key", {
-        expiresIn: maxAge
-    })
-    console.log(da,"jeejfhasfhjadsfh");
     return jwt.sign({ id }, "secret-key", {
         expiresIn: maxAge
     })
@@ -41,14 +36,10 @@ const handleErrors = (err) => {
 }
 
 const adminlogin=async function(email,password){
-    console.log("Adminlogin called");
     const admin =await Admin.findOne({email});
-    console.log(admin,"admin finded");
     if(admin){
-        console.log("enterd to if");
         const auth=await bcrypt.compare(password,admin.password);
         if(auth){
-            console.log("entered to auth");
             return admin;
         }else{
             throw Error("Incorrect password")
@@ -59,13 +50,11 @@ const adminlogin=async function(email,password){
 }
 
 module.exports.AdminLogin = async(req,res,next)=>{
-    console.log("adminlogin called");
   try {
     const {email,password} = req.body;
-    console.log(req.body,"body");
     const admin = await adminlogin(email,password)
     const token = createToken(admin._id)
-    res.cookie("jwt", token, {
+    res.cookie("admin_jwt", token, {
         withcrdentials: true,
         httpOnly: false,
         maxAge: maxAge * 1000
@@ -80,10 +69,30 @@ module.exports.AdminLogin = async(req,res,next)=>{
 
 module.exports.home = async(req,res,next)=>{
     try {
-        const usersData = await User.find({})
-        res.status(201).json(usersData)
+    const token = req.cookies.admin_jwt;
+    
+        if(token){
+            jwt.verify(token,"secret-key",async (err,decodedToken)=>{
+                if(err){
+                  res.json({status:false});
+                  next() 
+                }else{
+                    const usersData = await User.find({})
+                    if(usersData){
+                        res.status(201).json({status:true,usersData})
+                        next();
+                    }else{
+                        res.json({status:false})
+                        next();
+                    }
+                 
+                }
+                })
+            }
+       
     } catch (error) {
         res.status(422).json({error})
+        next()
     }
 }
 
@@ -110,10 +119,8 @@ module.exports.addUser = async(req,res,next)=>{
 }
 
 module.exports.deleteUser=async(req,res,next)=>{
-    console.log(req.params.id,"called");
     try {
-        const id =req.params.id
-        
+        const id =req.params.id  
         const deleteUser = await User.findOneAndDelete({_id:id})
         res.status(201).json(deleteUser)
 

@@ -19,7 +19,7 @@ function Profile() {
             if (!cookies.jwt) {
                 navigate("/login");
             } else {
-                const { data } = await axios.post("http://localhost:5000", {}, { withCredentials: true });
+                const { data } = await axios.post("http://localhost:5000", {}, { withCredentials:true});
                 if (!data.status) {
                     removeCookie("jwt");
                     navigate("/login")
