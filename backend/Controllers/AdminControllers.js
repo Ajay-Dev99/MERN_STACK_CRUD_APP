@@ -3,7 +3,8 @@ const User = require("../Models/UserModel")
 const Admin = require("../Models/AdminModel")
 const jwt = require('jsonwebtoken')
 const maxAge = 3 * 24 * 60 * 60;
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const { findOneAndUpdate } = require("../Models/UserModel");
 
 
 const createToken = (id) => {
@@ -129,4 +130,17 @@ module.exports.deleteUser=async(req,res,next)=>{
     }
 }
 
+module.exports.editUser = async(req,res,next)=>{
+    try {
+        const {id,name,email} = req.body
+        const userdata = await User.findOneAndUpdate({_id:id},{$set:{
+            name:name,
+            email:email
+        }}).then(()=>{
+            res.status(201).json({status:true,message:"User data edited"})
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
 

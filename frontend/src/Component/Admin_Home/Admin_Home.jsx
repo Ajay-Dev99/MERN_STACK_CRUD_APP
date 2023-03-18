@@ -93,7 +93,7 @@ function AdminHome() {
                     <tbody>
                         {
                            
-                            usersData ? usersData.map((user, id) => {
+                            usersData && usersData.map((user, id) => {
                                 return (
                                     <tr key={id}>
                                         <th scope="row">{id + 1}</th>
@@ -116,7 +116,7 @@ function AdminHome() {
                                         </td>
                                     </tr>
                                 )
-                            }) : <h1>No users Found</h1>
+                            }) 
                         }
 
 

@@ -39,8 +39,15 @@ function Profile() {
     }
 
     function upload(e) {
-        let testing = e.target.files[0]
-        setEditImage(testing)
+        let file = e.target.files[0]
+        if (file.type !== "image/jpeg" && file.type !== "image/png") {
+          toast("Please upload a JPEG or PNG image file.",{
+            position:"top-center"
+        });
+        } else {
+        setEditImage(file)
+          
+        }
 
     }
 
